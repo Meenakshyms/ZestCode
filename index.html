@@ -3,211 +3,225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZestSide Secret Code Converter</title>
+  <title>ZestSide Secret Code</title>
   <style>
-    :root {
-      --bg: #0d1117;
-      --card: #161b22;
-      --text: #f0f6fc;
-      --accent: #58a6ff;
-      --button1: #238636;
-      --button2: #d29922;
-      --button3: #0366d6;
-    }
-    [data-theme="light"] {
-      --bg: #f5f5f5;
-      --card: #ffffff;
-      --text: #111;
-      --accent: #0078ff;
-      --button1: #2ea043;
-      --button2: #f0b232;
-      --button3: #409cff;
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
     }
     body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      transition: background 0.5s, color 0.5s;
+      background: radial-gradient(circle at top left, #1e0034, #000);
+      color: #fff;
     }
+
+    /* Neon floating background */
+    .neon-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.3), transparent 70%) 0 0,
+                  radial-gradient(circle, rgba(255,0,255,0.3), transparent 70%) 50% 50%,
+                  radial-gradient(circle, rgba(255,128,0,0.3), transparent 70%) 100% 100%;
+      background-size: 100% 100%;
+      filter: blur(100px);
+      animation: float 8s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    @keyframes float {
+      0% { transform: translate(0,0) scale(1); }
+      100% { transform: translate(10%, -10%) scale(1.1); }
+    }
+
+    /* Center cards */
     .card {
-      background: var(--card);
+      position: relative;
+      z-index: 1;
+      background: rgba(15,15,30,0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 30px;
       border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 0 20px #00000044;
-      width: 95%;
-      max-width: 500px;
+      width: 330px;
+      box-shadow: 0 0 25px rgba(255,0,255,0.3), 0 0 50px rgba(0,200,255,0.2);
       text-align: center;
-      transition: 0.4s;
+      transition: all 0.3s ease;
     }
-    h1 {
-      color: var(--accent);
-      margin-bottom: 15px;
-      text-shadow: 0 0 8px var(--accent);
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 35px rgba(255,0,255,0.5), 0 0 70px rgba(0,200,255,0.4);
     }
-    textarea {
+
+    input, textarea {
       width: 100%;
-      height: 110px;
-      margin: 10px 0;
-      border-radius: 12px;
-      padding: 12px;
-      border: 1px solid #30363d;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 15px;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
       outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 14px;
       resize: none;
-      transition: border 0.3s, background 0.3s;
     }
-    textarea:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
-    .btn-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px; }
-    button { padding: 10px 20px; border: none; border-radius: 10px; color: #fff; cursor: pointer; font-size: 15px; transition: 0.3s; }
-    button:hover { transform: scale(1.05); }
-    .encode-btn { background: var(--button1); }
-    .decode-btn { background: var(--button2); }
-    .copy-btn { background: var(--button3); }
-    .theme-btn { background: var(--accent); }
-    footer { margin-top: 15px; font-size: 13px; color: #8b949e; }
-    footer span { color: var(--accent); }
-    input[type="password"], input[type="text"] {
-      padding: 10px; margin: 8px; width: 70%; border-radius: 8px; border: 1px solid #30363d;
-      background: var(--bg); color: var(--text); outline: none;
+
+    button {
+      background: linear-gradient(90deg, #00ffff, #ff00ff);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #fff;
+      transition: 0.3s;
+      margin: 6px;
     }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff;
+    }
+
+    footer {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #bbb;
+    }
+    footer span {
+      color: #ff99ff;
+      font-weight: 600;
+    }
+
+    /* Login overlay */
     #loginOverlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--bg); flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(10,10,25,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
     }
   </style>
 </head>
 <body>
+  <div class="neon-bg"></div>
 
-  <!-- LOGIN PAGE -->
-  <div id="loginOverlay">
-    <h1>Sign in to ZestSide (Demo)</h1>
-    <input id="username" type="text" placeholder="Username">
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginOverlay">
+    <h2>🔑 Sign in to <span style="color:#ff99ff">ZestSide</span></h2>
+    <input id="username" placeholder="Username">
     <input id="password" type="password" placeholder="Password">
-    <label><input type="checkbox" id="staySignedIn"> Stay signed in</label>
-    <button class="encode-btn" onclick="login()">Login</button>
-    <p style="margin-top:10px;font-size:13px;">Demo credentials: <b>mehin</b> / <b>04122019</b></p>
+    <label style="font-size:13px;display:block;margin-top:5px;">
+      <input type="checkbox" id="staySigned"> Stay signed in
+    </label>
+    <button onclick="login()">Login</button>
+    <p style="font-size:12px;margin-top:10px;color:#aaa">
+      Demo credentials: <br> username = <b>mehin</b>, password = <b>04122019</b>
+    </p>
   </div>
 
-  <!-- MAIN APP -->
+  <!-- MAIN APP CARD -->
   <div class="card" id="appCard" style="display:none">
     <h1>🔐 ZestSide Secret Code</h1>
     <textarea id="inputText" placeholder="Enter your message..."></textarea>
 
-    <div class="btn-container">
-      <button class="encode-btn" onclick="encode()">Encode 🔁</button>
-      <button class="decode-btn" onclick="askPassword()">Decode 🔍</button>
-      <button class="copy-btn" onclick="copyText()">Copy 📋</button>
-      <button class="theme-btn" onclick="toggleTheme()">☀️ / 🌙</button>
+    <div>
+      <button onclick="encode()">Encode 🔁</button>
+      <button onclick="askDecodePassword()">Decode 🔍</button>
+      <button onclick="copyText()">Copy 📋</button>
+      <button onclick="toggleTheme()">☀️ / 🌙</button>
     </div>
 
     <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
 
-    <div id="passwordArea" style="display:none;">
-      <input type="password" id="passwordInput" placeholder="Enter secret password">
-      <button class="decode-btn" onclick="decode()">Unlock 🔓</button>
+    <div id="decodePasswordArea" style="display:none;margin-top:10px">
+      <input id="decodePass" type="password" placeholder="Enter decode password">
+      <button onclick="doProtectedDecode()">Unlock 🔓</button>
     </div>
 
-    <button onclick="logout()" style="margin-top:15px;background:#e74c3c;">Logout 🚪</button>
+    <footer>Made with 💙 by <span>ZestSide</span></footer>
   </div>
 
-  <footer>Made with 💙 by <span>ZestSide</span></footer>
+<script>
+  const DEMO_USER = "mehin";
+  const DEMO_PASS = "04122019";
+  const PROTECTED_DECODE_PASSWORD = "zestcode";
 
-  <script>
-    const DEMO_USER = "mehin";
-    const DEMO_PASS = "04122019";
-    const PASSWORD = "zestcode";
+  window.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("zest_signed_in");
+    if (saved === "true") showApp();
+  });
 
-    const map = {
-      q:"+", w:"×", e:"=", r:"#", t:"%", y:"^", u:"&", i:"*", o:"(", p:")",
-      a:"@", s:"$", d:"~", f:"?", g:"!", h:":", j:";", k:"<", l:">",
-      z:"{", x:"}", c:"[", v:"]", b:"/", n:"\\", m:"_"
-    };
-    const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
+  function login() {
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value.trim();
+    const stay = document.getElementById("staySigned").checked;
+    if (u === DEMO_USER && p === DEMO_PASS) {
+      if (stay) localStorage.setItem("zest_signed_in", "true");
+      showApp();
+    } else alert("Invalid username or password!");
+  }
 
-    window.addEventListener("DOMContentLoaded",()=>{
-      if(localStorage.getItem("zest_signed_in")==="true"){
-        showApp();
-      }
-    });
+  function showApp() {
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("appCard").style.display = "block";
+  }
 
-    function login(){
-      const user=document.getElementById("username").value.trim();
-      const pass=document.getElementById("password").value.trim();
-      if(user===DEMO_USER && pass===DEMO_PASS){
-        localStorage.setItem("zest_signed_in","true");
-        showApp();
-      } else {
-        alert("❌ Invalid username or password!");
-      }
+  const map = {q:"+",w:"×",e:"=",r:"#",t:"%",y:"^",u:"&",i:"*",o:"(",p:")",
+               a:"@",s:"$",d:"~",f:"?",g:"!",h:":",j:";",k:"<",l:">",
+               z:"{",x:"}",c:"[",v:"]",b:"/",n:"\\",m:"_"};
+  const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
+
+  function typeEffect(text){
+    const out=document.getElementById("outputText");
+    out.value=""; let i=0;
+    const iv=setInterval(()=>{out.value+=text[i]||""; i++; if(i>text.length)clearInterval(iv)},14);
+  }
+
+  function encode(){
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>map[ch.toLowerCase()]||ch).join("");
+    typeEffect(res);
+  }
+
+  function askDecodePassword(){
+    document.getElementById("decodePasswordArea").style.display="block";
+  }
+
+  function doProtectedDecode(){
+    const pass=document.getElementById("decodePass").value.trim();
+    if(pass!==PROTECTED_DECODE_PASSWORD){alert("Wrong decode password!");return;}
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>reverseMap[ch]||ch).join("");
+    typeEffect(res);
+    document.getElementById("decodePasswordArea").style.display="none";
+  }
+
+  function copyText(){
+    const out=document.getElementById("outputText");
+    out.select(); document.execCommand("copy");
+    alert("Copied!");
+  }
+
+  function toggleTheme(){
+    const b=document.body;
+    if(b.style.backgroundColor==="white"){
+      b.style.background="radial-gradient(circle at top left, #1e0034, #000)";
+      document.body.style.color="#fff";
+    } else {
+      b.style.background="white";
+      document.body.style.color="#000";
     }
-
-    function showApp(){
-      document.getElementById("loginOverlay").style.display="none";
-      document.getElementById("appCard").style.display="block";
-    }
-
-    function logout(){
-      localStorage.removeItem("zest_signed_in");
-      document.getElementById("appCard").style.display="none";
-      document.getElementById("loginOverlay").style.display="flex";
-    }
-
-    function encode(){
-      const text=document.getElementById("inputText").value;
-      const res=text.split("").map(ch=>{
-        const lower=ch.toLowerCase();
-        return map[lower]||ch;
-      }).join("");
-      typeEffect(res);
-      localStorage.setItem("outputText",res);
-    }
-
-    function askPassword(){
-      document.getElementById("passwordArea").style.display="block";
-    }
-
-    function decode(){
-      const pass=document.getElementById("passwordInput").value;
-      if(pass!==PASSWORD){alert("❌ Wrong password!");return;}
-      const text=document.getElementById("inputText").value;
-      const res=text.split("").map(ch=>reverseMap[ch]||ch).join("");
-      typeEffect(res);
-      document.getElementById("passwordArea").style.display="none";
-    }
-
-    function copyText(){
-      const output=document.getElementById("outputText");
-      output.select();
-      document.execCommand("copy");
-      alert("Copied to clipboard! 📋");
-    }
-
-    function typeEffect(text){
-      const output=document.getElementById("outputText");
-      output.value="";
-      let i=0;
-      const iv=setInterval(()=>{
-        output.value+=text[i];
-        i++;
-        if(i>=text.length) clearInterval(iv);
-      },20);
-    }
-
-    function toggleTheme(){
-      const cur=document.body.getAttribute("data-theme");
-      document.body.setAttribute("data-theme",cur==="light"?"dark":"light");
-    }
-  </script>
-
+  }
+</script>
 </body>
 </html>
