@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ZestSide Secret Code — Demo Login</title>
+  <style>
+    :root{
+      --bg:#0d1117; --card:#161b22; --text:#f0f6fc; --accent:#58a6ff;
+      --button1:#238636; --button2:#d29922; --button3:#0366d6;
+    }
+    [data-theme="light"]{
+      --bg:#f5f5f5; --card:#fff; --text:#111; --accent:#0078ff;
+      --button1:#2ea043; --button2:#f0b232; --button3:#409cff;
+    }
+    *{box-sizing:border-box;font-family:Poppins,system-ui,Segoe UI,Roboto,Helvetica,Arial;}
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text);transition:0.3s;}
+    .card{width:95%;max-width:540px;background:var(--card);border-radius:18px;padding:22px;box-shadow:0 8px 30px #00000044;text-align:center;}
+    h1{color:var(--accent);margin:6px 0 14px;text-shadow:0 0 8px var(--accent);}
+    textarea{width:100%;height:110px;border-radius:10px;padding:12px;border:1px solid #30363d;background:var(--bg);color:var(--text);resize:none;font-size:15px}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+    button{padding:10px 18px;border-radius:10px;border:none;color:#fff;cursor:pointer;font-size:15px;transition:0.2s}
+    .encode{background:var(--button1)} .decode{background:var(--button2)} .copy{background:var(--button3)} .theme{background:var(--accent)}
+    .small{padding:8px 12px;font-size:14px}
+    .typing{border-right:3px solid var(--accent);white-space:pre-wrap;overflow:hidden;animation:blink .7s step-end infinite}
+    @keyframes blink{50%{border-color:transparent}}
+    footer{font-size:13px;color:#8b949e;margin-top:10px}
+    footer span{color:var(--accent)}
+
+    /* LOGIN overlay */
+    .overlay{position:fixed;inset:0;background:linear-gradient(0deg,#00000066,#00000066);display:flex;align-items:center;justify-content:center;z-index:40}
+    .login-box{width:92%;max-width:420px;background:var(--card);padding:20px;border-radius:14px;box-shadow:0 10px 40px #00000066;text-align:left}
+    .login-box h2{color:var(--accent);margin:0 0 10px}
+    .field{margin:10px 0;display:flex;flex-direction:column;gap:8px}
+    input[type="text"],input[type="password"]{padding:10px;border-radius:8px;border:1px solid #30363d;background:var(--bg);color:var(--text);outline:none}
+    .row{display:flex;gap:8px;align-items:center}
+    .hint{font-size:13px;color:#9aa4b2;margin-top:6px}
+    .error{color:#ff6b6b;margin-top:6px;font-size:14px}
+    .remember{display:flex;gap:8px;align-items:center;color:#c9d1d9}
+    .center{display:flex;justify-content:center;gap:10px;margin-top:12px}
+    .small-note{font-size:12px;color:#8b949e;margin-top:10px}
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN OVERLAY -->
+  <div id="loginOverlay" class="overlay" aria-hidden="false">
+    <div class="login-box" role="dialog" aria-modal="true">
+      <h2>Sign in to ZestSide (Demo)</h2>
+      <div class="field">
+        <label>Username</label>
+        <input id="loginUser" type="text" placeholder="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPass" type="password" placeholder="password">
+      </div>
+      <div class="row remember">
+        <input id="rememberChk" type="checkbox">
+        <label for="rememberChk">Stay signed in on this browser</label>
+      </div>
+      <div class="center">
+        <button id="btnSignIn" class="small">Sign in</button>
+        <button id="btnGuest" class="small" style="background:#505663">Use as Guest</button>
+      </div>
+      <div id="loginError" class="error" style="display:none"></div>
+      <div class="small-note">Demo credentials (visible in code): username = <b>mehin</b> , password = <b>04122019</b></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP CARD -->
+  <div class="card" id="appCard" style="display:none">
+    <h1>🔐 ZestSide Secret Code</h1>
+
+    <textarea id="inputText" placeholder="Enter your message..."></textarea>
+
+    <div class="btns">
+      <button class="encode" onclick="encode()">Encode 🔁</button>
+      <button class="decode" onclick="askDecodePassword()">Decode 🔍</button>
+      <button class="copy" onclick="copyText()">Copy 📋</button>
+      <button class="theme" onclick="toggleTheme()">☀️ / 🌙</button>
+    </div>
+
+    <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+
+    <div id="decodePasswordArea" style="display:none;margin-top:10px">
+      <input id="decodePass" type="password" placeholder="Enter decode password" style="padding:8px;border-radius:8px;border:1px solid #30363d;background:var(--bg);color:var(--text)">
+      <button class="decode small" onclick="doProtectedDecode()">Unlock 🔓</button>
+    </div>
+
+    <footer>Made with 💙 by <span>ZestSide</span></footer>
+  </div>
+
+<script>
+  /* --------- CONFIG --------- */
+  const DEMO_USER = "mehin";
+  const DEMO_PASS = "04122019";
+  const PROTECTED_DECODE_PASSWORD = "zestcode"; // existing decode lock in app
+
+  /* On load: check saved session */
+  window.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("zest_signed_in");
+    if (saved === "true") {
+      showApp();
+    } else {
+      document.getElementById("loginOverlay").style.display = "flex";
+    }
+
+    // restore input/output if saved
+    const inTxt = localStorage.getItem("inputText") || "";
+    const outTxt = localStorage.getItem("outputText") || "";
+    document.getElementById("inputText").value = inTxt;
+    document.getElementById("outputText").value = outTxt;
+
+    // theme restore
+    const theme = localStorage.getItem("zest_theme") || "dark";
+    document.body.setAttribute("data-theme", theme === "light" ? "light" : "dark");
+  });
+
+  /* LOGIN handling (fake client-side) */
+  document.getElementById("btnSignIn").addEventListener("click", () => {
+    const u = (document.getElementById("loginUser").value || "").trim();
+    const p = (document.getElementById("loginPass").value || "").trim();
+    const remember = document.getElementById("rememberChk").checked;
+    const err = document.getElementById("loginError");
+    if (u === DEMO_USER && p === DEMO_PASS) {
+      if (remember) localStorage.setItem("zest_signed_in", "true");
+      else sessionStorage.setItem("zest_signed_in_temp", "true");
+      err.style.display = "none";
+      showApp();
+    } else {
+      err.textContent = "Invalid username or password.";
+      err.style.display = "block";
+    }
+  });
+
+  // Guest button simply shows app without saving session
+  document.getElementById("btnGuest").addEventListener("click", () => {
+    sessionStorage.setItem("zest_signed_in_temp", "true");
+    showApp();
+  });
+
+  function showApp(){
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("appCard").style.display = "block";
+  }
+
+  /* --------- Cipher map --------- */
+  const map = {
+    q:"+", w:"×", e:"=", r:"#", t:"%", y:"^", u:"&", i:"*", o:"(", p:")",
+    a:"@", s:"$", d:"~", f:"?", g:"!", h:":", j:";", k:"<", l:">",
+    z:"{", x:"}", c:"[", v:"]", b:"/", n:"\\", m:"_"
+  };
+  const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
+
+  /* Save messages */
+  function saveMessages(){
+    localStorage.setItem("inputText", document.getElementById("inputText").value);
+    localStorage.setItem("outputText", document.getElementById("outputText").value);
+  }
+
+  /* Typing effect */
+  function typeEffect(text){
+    const out = document.getElementById("outputText");
+    out.value = "";
+    let i=0;
+    const iv = setInterval(()=> {
+      out.value += text[i] || "";
+      i++;
+      if(i>text.length) clearInterval(iv);
+    }, 14);
+    // save after small delay
+    setTimeout(saveMessages, text.length*14 + 200);
+  }
+
+  /* Encode / decode functions */
+  function encode(){
+    const text = document.getElementById("inputText").value;
+    const res = text.split("").map(ch => {
+      const lower = (ch || "").toLowerCase();
+      return map[lower] || ch;
+    }).join("");
+    typeEffect(res);
+    localStorage.setItem("outputText", res);
+  }
+
+  // ask for decode password (already on page)
+  function askDecodePassword(){
+    document.getElementById("decodePasswordArea").style.display = "block";
+  }
+
+  function doProtectedDecode(){
+    const pass = document.getElementById("decodePass").value || "";
+    if(pass !== PROTECTED_DECODE_PASSWORD){
+      alert("Wrong decode password!");
+      return;
+    }
+    const text = document.getElementById("inputText").value;
+    const res = text.split("").map(ch => reverseMap[ch] || ch).join("");
+    typeEffect(res);
+    saveMessages();
+    document.getElementById("decodePasswordArea").style.display = "none";
+  }
+
+  function copyText(){
+    const out = document.getElementById("outputText");
+    out.select();
+    document.execCommand("copy");
+    alert("Copied to clipboard!");
+  }
+
+  /* Theme toggle */
+  function toggleTheme(){
+    const cur = document.body.getAttribute("data-theme");
+    if(cur === "light"){
+      document.body.setAttribute("data-theme","dark");
+      localStorage.setItem("zest_theme","dark");
+    } else {
+      document.body.setAttribute("data-theme","light");
+      localStorage.setItem("zest_theme","light");
+    }
+  }
+</script>
+</body>
+</html>
