@@ -1,5 +1,6 @@
   <!-- MAIN APP CARD -->
-  <div class="card" id="appCard" style="display:none">
+ <div class="card" id="appCard">
+
     <h1>🔐 ZestSide Secret Code</h1>
 
     <textarea id="inputText" placeholder="Enter your message..."></textarea>
@@ -27,15 +28,7 @@
   const DEMO_PASS = "04122019";
   const PROTECTED_DECODE_PASSWORD = "zestcode"; // existing decode lock in app
 
-  /* On load: check saved session */
-  window.addEventListener("DOMContentLoaded", () => {
-    const saved = localStorage.getItem("zest_signed_in");
-    if (saved === "true") {
-      showApp();
-    } else {
-      document.getElementById("loginOverlay").style.display = "flex";
-    }
-
+   window.addEventListener("DOMContentLoaded", () => {
     // restore input/output if saved
     const inTxt = localStorage.getItem("inputText") || "";
     const outTxt = localStorage.getItem("outputText") || "";
@@ -46,6 +39,7 @@
     const theme = localStorage.getItem("zest_theme") || "dark";
     document.body.setAttribute("data-theme", theme === "light" ? "light" : "dark");
   });
+
 
 
   /* --------- Cipher map --------- */
