@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZestSide Secret Code</title>
   <style>
@@ -21,7 +21,6 @@
       color: #fff;
     }
 
-    /* Floating neon background */
     .neon-bg {
       position: absolute;
       width: 200%;
@@ -41,7 +40,6 @@
       100% { transform: translate(10%, -10%) scale(1.1); }
     }
 
-    /* Card Base */
     .card {
       position: relative;
       z-index: 1;
@@ -65,7 +63,6 @@
       margin-bottom: 20px;
     }
 
-    /* Input group styling */
     .input-group {
       text-align: left;
       margin: 15px 0;
@@ -121,7 +118,6 @@
       font-weight: 600;
     }
 
-    /* Login Overlay */
     #loginOverlay {
       display: flex;
       flex-direction: column;
@@ -129,7 +125,6 @@
       justify-content: center;
     }
 
-    /* Hide app initially */
     #appCard {
       display: none;
     }
@@ -188,8 +183,6 @@
   </div>
 
 <script>
-  const DEMO_USER = "mehin";
-  const DEMO_PASS = "04122019";
   const PROTECTED_DECODE_PASSWORD = "zestcode";
 
   window.addEventListener("DOMContentLoaded", () => {
@@ -201,10 +194,15 @@
     const u = document.getElementById("username").value.trim();
     const p = document.getElementById("password").value.trim();
     const stay = document.getElementById("staySigned").checked;
-    if (u === DEMO_USER && p === DEMO_PASS) {
-      if (stay) localStorage.setItem("zest_signed_in", "true");
-      showApp();
-    } else alert("Invalid username or password!");
+    
+    if (u === "" || p === "") {
+      alert("Please enter both username and password!");
+      return;
+    }
+
+    alert("Login successful!");
+    if (stay) localStorage.setItem("zest_signed_in", "true");
+    showApp();
   }
 
   function showApp() {
@@ -219,51 +217,4 @@
   }
 
   const map = {q:"+",w:"×",e:"=",r:"#",t:"%",y:"^",u:"&",i:"*",o:"(",p:")",
-               a:"@",s:"$",d:"~",f:"?",g:"!",h:":",j:";",k:"<",l:">",
-               z:"{",x:"}",c:"[",v:"]",b:"/",n:"\\",m:"_"};
-  const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
-
-  function typeEffect(text){
-    const out=document.getElementById("outputText");
-    out.value=""; let i=0;
-    const iv=setInterval(()=>{out.value+=text[i]||""; i++; if(i>text.length)clearInterval(iv)},14);
-  }
-
-  function encode(){
-    const text=document.getElementById("inputText").value;
-    const res=text.split("").map(ch=>map[ch.toLowerCase()]||ch).join("");
-    typeEffect(res);
-  }
-
-  function askDecodePassword(){
-    document.getElementById("decodePasswordArea").style.display="block";
-  }
-
-  function doProtectedDecode(){
-    const pass=document.getElementById("decodePass").value.trim();
-    if(pass!==PROTECTED_DECODE_PASSWORD){alert("Wrong decode password!");return;}
-    const text=document.getElementById("inputText").value;
-    const res=text.split("").map(ch=>reverseMap[ch]||ch).join("");
-    typeEffect(res);
-    document.getElementById("decodePasswordArea").style.display="none";
-  }
-
-  function copyText(){
-    const out=document.getElementById("outputText");
-    out.select(); document.execCommand("copy");
-    alert("Copied!");
-  }
-
-  function toggleTheme(){
-    const b=document.body;
-    if(b.style.backgroundColor==="white"){
-      b.style.background="radial-gradient(circle at top left, #1e0034, #000)";
-      document.body.style.color="#fff";
-    } else {
-      b.style.background="white";
-      document.body.style.color="#000";
-    }
-  }
-</script>
-</body>
-</html>
+               a:"@",s:"$",d:"~",f:"?",g:"!",h:":",j:
