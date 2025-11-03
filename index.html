@@ -43,7 +43,7 @@
     .card {
       position: relative;
       z-index: 1;
-      background: rgba(15,15,30,0.8);
+      background: rgba(15,15,30,0.85);
       border: 1px solid rgba(255,255,255,0.1);
       backdrop-filter: blur(15px);
       padding: 30px;
@@ -62,7 +62,7 @@
 
     input, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 10px 12px;
       margin: 8px 0;
       border: none;
       border-radius: 10px;
@@ -110,6 +110,44 @@
       justify-content: center;
       z-index: 2;
     }
+
+    /* LOGIN PAGE STYLING */
+    #loginOverlay .card {
+      padding: 40px 35px;
+    }
+
+    .login-title {
+      font-size: 1.6em;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #ff99ff;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    .login-subtitle {
+      font-size: 0.9em;
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      margin-bottom: 5px;
+      color: #ccc;
+      display: block;
+    }
+
+    .login-note {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 10px;
+    }
+
   </style>
 </head>
 <body>
@@ -117,15 +155,28 @@
 
   <!-- LOGIN CARD -->
   <div class="card" id="loginOverlay">
-    <h2>🔑 Sign in to <span style="color:#ff99ff">ZestSide</span></h2>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <label style="font-size:13px;display:block;margin-top:5px;">
+    <div class="login-title">🔑 ZestSide Login</div>
+    <div class="login-subtitle">Access your Secret Code Converter</div>
+
+    <div class="input-group">
+      <label class="input-label">Username</label>
+      <input id="username" placeholder="Enter username">
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Password</label>
+      <input id="password" type="password" placeholder="Enter password">
+    </div>
+
+    <label style="font-size:13px;display:block;margin:10px 0;">
       <input type="checkbox" id="staySigned"> Stay signed in
     </label>
+
     <button onclick="login()">Login</button>
-    <p style="font-size:12px;margin-top:10px;color:#aaa">
-      Demo credentials: <br> username = <b>mehin</b>, password = <b>04122019</b>
+
+    <p class="login-note">
+      Demo credentials:<br>
+      username = <b>mehin</b>, password = <b>04122019</b>
     </p>
   </div>
 
@@ -148,7 +199,6 @@
       <button onclick="doProtectedDecode()">Unlock 🔓</button>
     </div>
 
-    <!-- Sign Out button -->
     <div style="margin-top:20px;">
       <button onclick="signOut()" style="width:100%;background:linear-gradient(90deg,#ff0066,#ff00ff);">
         🚪 Sign Out
