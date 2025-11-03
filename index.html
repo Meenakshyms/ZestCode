@@ -51,30 +51,22 @@
       width: 340px;
       box-shadow: 0 0 25px rgba(255,0,255,0.3), 0 0 50px rgba(0,200,255,0.2);
       text-align: center;
-      transition: all 0.3s ease;
-      opacity: 1;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 35px rgba(255,0,255,0.5), 0 0 70px rgba(0,200,255,0.4);
+      transition: all 0.4s ease;
     }
 
     /* Fade animations */
     .fade-out {
-      opacity: 0;
-      transform: scale(0.95);
-      transition: all 0.6s ease;
+      animation: fadeOut 0.6s forwards;
     }
     .fade-in {
-      opacity: 0;
-      transform: scale(0.9);
-      animation: fadeIn 0.8s ease forwards;
+      animation: fadeIn 0.8s forwards;
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: scale(0.9); }
     }
     @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     h2, h1 {
@@ -222,18 +214,18 @@
     const loginCard = document.getElementById("loginOverlay");
     loginCard.classList.add("fade-out");
 
+    // Wait for animation, then show main app
     setTimeout(() => {
       if (stay) localStorage.setItem("zest_signed_in", "true");
-      showApp();
       loginCard.style.display = "none";
-      loginCard.classList.remove("fade-out");
+      showApp();
     }, 600);
   }
 
   function showApp(skipAnim=false) {
     const app = document.getElementById("appCard");
     app.style.display = "block";
-    if (!skipAnim) app.classList.add("fade-in");
+    app.classList.add("fade-in");
     setTimeout(() => app.classList.remove("fade-in"), 900);
   }
 
