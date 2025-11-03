@@ -48,7 +48,7 @@
       background: rgba(15,15,30,0.85);
       border: 1px solid rgba(255,255,255,0.1);
       backdrop-filter: blur(15px);
-      padding: 35px;
+      padding: 40px 35px;
       border-radius: 20px;
       width: 340px;
       box-shadow: 0 0 25px rgba(255,0,255,0.3), 0 0 50px rgba(0,200,255,0.2);
@@ -60,12 +60,12 @@
       box-shadow: 0 0 35px rgba(255,0,255,0.5), 0 0 70px rgba(0,200,255,0.4);
     }
 
-    h2 {
-      font-weight: 600;
+    h2, h1 {
       color: #ff99ff;
       margin-bottom: 20px;
     }
 
+    /* Input group styling */
     .input-group {
       text-align: left;
       margin: 15px 0;
@@ -78,7 +78,7 @@
       margin-bottom: 5px;
     }
 
-    .input-group input {
+    .input-group input, textarea {
       width: 100%;
       padding: 10px;
       border: none;
@@ -88,9 +88,10 @@
       color: #fff;
       font-size: 14px;
       transition: 0.3s;
+      resize: none;
     }
 
-    .input-group input:focus {
+    .input-group input:focus, textarea:focus {
       box-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff;
     }
 
@@ -103,31 +104,34 @@
       font-weight: 600;
       color: #fff;
       transition: 0.3s;
-      margin-top: 10px;
-      width: 100%;
+      margin: 6px;
     }
     button:hover {
       transform: scale(1.05);
       box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff;
     }
 
-    .hint {
-      font-size: 12px;
-      margin-top: 15px;
-      color: #aaa;
-      background: rgba(255,255,255,0.05);
-      padding: 8px;
-      border-radius: 8px;
-    }
-
     footer {
-      margin-top: 20px;
+      margin-top: 15px;
       font-size: 13px;
       color: #bbb;
     }
     footer span {
       color: #ff99ff;
       font-weight: 600;
+    }
+
+    /* Login Overlay */
+    #loginOverlay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hide app initially */
+    #appCard {
+      display: none;
     }
   </style>
 </head>
@@ -136,7 +140,7 @@
 
   <!-- LOGIN CARD -->
   <div class="card" id="loginOverlay">
-    <h2>🔑 Login to <span style="color:#00ffff">ZestSide</span></h2>
+    <h2>🔑 ZestSide Login</h2>
 
     <div class="input-group">
       <label for="username">Username</label>
@@ -154,27 +158,110 @@
 
     <button onclick="login()">Login</button>
 
-    <div class="hint">
-      Demo credentials:<br> <b>Username:</b> mehin <br> <b>Password:</b> 04122019
+    <footer>Made with 💜 by <span>ZestSide</span></footer>
+  </div>
+
+  <!-- MAIN APP CARD -->
+  <div class="card" id="appCard">
+    <h1>🔐 ZestSide Secret Code</h1>
+    <textarea id="inputText" placeholder="Enter your message..."></textarea>
+
+    <div>
+      <button onclick="encode()">Encode 🔁</button>
+      <button onclick="askDecodePassword()">Decode 🔍</button>
+      <button onclick="copyText()">Copy 📋</button>
+      <button onclick="toggleTheme()">☀️ / 🌙</button>
     </div>
 
-    <footer>Made with 💜 by <span>ZestSide</span></footer>
+    <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+
+    <div id="decodePasswordArea" style="display:none;margin-top:10px">
+      <input id="decodePass" type="password" placeholder="Enter decode password">
+      <button onclick="doProtectedDecode()">Unlock 🔓</button>
+    </div>
+
+    <button onclick="signOut()" style="margin-top:15px;width:100%;background:linear-gradient(90deg,#ff0066,#ff00ff);">
+      🚪 Sign Out
+    </button>
+
+    <footer>Made with 💙 by <span>ZestSide</span></footer>
   </div>
 
 <script>
   const DEMO_USER = "mehin";
   const DEMO_PASS = "04122019";
+  const PROTECTED_DECODE_PASSWORD = "zestcode";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("zest_signed_in");
+    if (saved === "true") showApp();
+  });
 
   function login() {
     const u = document.getElementById("username").value.trim();
     const p = document.getElementById("password").value.trim();
     const stay = document.getElementById("staySigned").checked;
-
     if (u === DEMO_USER && p === DEMO_PASS) {
       if (stay) localStorage.setItem("zest_signed_in", "true");
-      alert("Login successful!");
+      showApp();
+    } else alert("Invalid username or password!");
+  }
+
+  function showApp() {
+    document.getElementById("loginOverlay").style.display = "none";
+    document.getElementById("appCard").style.display = "block";
+  }
+
+  function signOut() {
+    localStorage.removeItem("zest_signed_in");
+    document.getElementById("appCard").style.display = "none";
+    document.getElementById("loginOverlay").style.display = "flex";
+  }
+
+  const map = {q:"+",w:"×",e:"=",r:"#",t:"%",y:"^",u:"&",i:"*",o:"(",p:")",
+               a:"@",s:"$",d:"~",f:"?",g:"!",h:":",j:";",k:"<",l:">",
+               z:"{",x:"}",c:"[",v:"]",b:"/",n:"\\",m:"_"};
+  const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
+
+  function typeEffect(text){
+    const out=document.getElementById("outputText");
+    out.value=""; let i=0;
+    const iv=setInterval(()=>{out.value+=text[i]||""; i++; if(i>text.length)clearInterval(iv)},14);
+  }
+
+  function encode(){
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>map[ch.toLowerCase()]||ch).join("");
+    typeEffect(res);
+  }
+
+  function askDecodePassword(){
+    document.getElementById("decodePasswordArea").style.display="block";
+  }
+
+  function doProtectedDecode(){
+    const pass=document.getElementById("decodePass").value.trim();
+    if(pass!==PROTECTED_DECODE_PASSWORD){alert("Wrong decode password!");return;}
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>reverseMap[ch]||ch).join("");
+    typeEffect(res);
+    document.getElementById("decodePasswordArea").style.display="none";
+  }
+
+  function copyText(){
+    const out=document.getElementById("outputText");
+    out.select(); document.execCommand("copy");
+    alert("Copied!");
+  }
+
+  function toggleTheme(){
+    const b=document.body;
+    if(b.style.backgroundColor==="white"){
+      b.style.background="radial-gradient(circle at top left, #1e0034, #000)";
+      document.body.style.color="#fff";
     } else {
-      alert("Invalid username or password!");
+      b.style.background="white";
+      document.body.style.color="#000";
     }
   }
 </script>
