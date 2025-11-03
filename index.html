@@ -3,256 +3,260 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZestSide Secret Code Converter</title>
+  <title>ZestSide Secret Code</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e);
       height: 100vh;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      transition: background 0.5s ease;
+      background: radial-gradient(circle at top left, #1e0034, #000);
+      color: #fff;
     }
 
-    /* Login Page */
-    #login-page {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
+    /* Neon floating background */
+    .neon-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.3), transparent 70%) 0 0,
+                  radial-gradient(circle, rgba(255,0,255,0.3), transparent 70%) 50% 50%,
+                  radial-gradient(circle, rgba(255,128,0,0.3), transparent 70%) 100% 100%;
+      background-size: 100% 100%;
+      filter: blur(100px);
+      animation: float 8s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    @keyframes float {
+      0% { transform: translate(0,0) scale(1); }
+      100% { transform: translate(10%, -10%) scale(1.1); }
     }
 
-    .login-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+    /* Floating neon hearts */
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      color: #ff00ff;
+      animation: floatHearts 6s linear infinite;
+      opacity: 0.7;
+      z-index: 0;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+    }
+    @keyframes floatHearts {
+      0% { transform: translateY(100vh) scale(1); opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    /* Card style */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(15,15,30,0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      width: 330px;
+      box-shadow: 0 0 25px rgba(255,0,255,0.3), 0 0 50px rgba(0,200,255,0.2);
       text-align: center;
-      width: 300px;
       transition: all 0.3s ease;
     }
-
-    .login-card h2 {
-      margin-bottom: 20px;
-      font-size: 1.6em;
-      color: #fff;
-      letter-spacing: 1px;
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 35px rgba(255,0,255,0.5), 0 0 70px rgba(0,200,255,0.4);
     }
 
-    .login-card input {
+    input, textarea {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
-      border-radius: 6px;
+      margin: 8px 0;
       border: none;
-      outline: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 1em;
-    }
-
-    .login-card input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
-    .login-card button {
-      background: linear-gradient(45deg, #ff00cc, #3333ff);
-      border: none;
-      padding: 10px 30px;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .login-card button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 15px #ff00ff;
-    }
-
-    /* Converter Page */
-    #converter-page {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      width: 100%;
-      text-align: center;
-      position: relative;
-    }
-
-    #converter-page h1 {
-      font-size: 2em;
-      margin-bottom: 10px;
-      color: #fff;
-    }
-
-    textarea {
-      width: 300px;
-      height: 100px;
       border-radius: 10px;
-      border: none;
       outline: none;
-      padding: 10px;
-      margin: 10px 0;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 1em;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 14px;
       resize: none;
     }
 
     button {
-      background: linear-gradient(45deg, #ff00cc, #3333ff);
+      background: linear-gradient(90deg, #00ffff, #ff00ff);
       border: none;
       padding: 10px 20px;
-      border-radius: 6px;
-      color: white;
-      margin: 5px;
+      border-radius: 12px;
       cursor: pointer;
+      font-weight: 600;
+      color: #fff;
       transition: 0.3s;
+      margin: 6px;
     }
-
     button:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 10px #ff00ff;
+      box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff;
     }
 
-    /* Floating Hearts */
-    .heart {
-      position: absolute;
-      bottom: 0;
-      font-size: 18px;
-      color: #ff00ff;
-      animation: float 6s linear infinite;
-      opacity: 0.8;
-      text-shadow: 0 0 10px #ff00ff;
+    footer {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #bbb;
+    }
+    footer span {
+      color: #ff99ff;
+      font-weight: 600;
     }
 
-    @keyframes float {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+    /* Login overlay */
+    #loginOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(10,10,25,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: opacity 0.6s ease;
     }
 
-    /* Theme (optional for future toggle) */
-    .dark { background: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e); }
-    .light { background: #f1f1f1; color: #000; }
-
-    /* Smooth Fade */
-    .fade-out {
-      animation: fadeOut 0.6s forwards;
-    }
-    .fade-in {
-      animation: fadeIn 0.6s forwards;
-    }
-
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .fadeOut {
+      opacity: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <!-- LOGIN PAGE -->
-  <div id="login-page">
-    <div class="login-card">
-      <h2>Welcome to ZestSide 💫</h2>
-      <input type="text" id="username" placeholder="Username">
-      <input type="password" id="password" placeholder="Password">
+  <div class="neon-bg"></div>
+
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginOverlay">
+    <div style="width:100%;">
+      <h2>🔑 Sign in to <span style="color:#ff99ff">ZestSide</span></h2>
+      <input id="username" placeholder="Username">
+      <input id="password" type="password" placeholder="Password">
       <button onclick="login()">Login</button>
     </div>
   </div>
 
-  <!-- CONVERTER PAGE -->
-  <div id="converter-page">
-    <h1>ZestSide Secret Code Converter 💖</h1>
-    <textarea id="inputText" placeholder="Enter your message..."></textarea><br>
+  <!-- MAIN APP CARD -->
+  <div class="card" id="appCard" style="display:none">
+    <h1>🔐 ZestSide Secret Code</h1>
+    <textarea id="inputText" placeholder="Enter your message..."></textarea>
+
     <div>
-      <button onclick="encode()">Encode</button>
-      <button onclick="decode()">Decode</button>
-      <button onclick="copyText()">Copy</button>
-      <button onclick="toggleTheme()">Toggle Theme</button>
-      <button onclick="signOut()">Sign Out</button>
+      <button onclick="encode()">Encode 🔁</button>
+      <button onclick="askDecodePassword()">Decode 🔍</button>
+      <button onclick="copyText()">Copy 📋</button>
+      <button onclick="toggleTheme()">☀️ / 🌙</button>
     </div>
+
+    <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+
+    <div id="decodePasswordArea" style="display:none;margin-top:10px">
+      <input id="decodePass" type="password" placeholder="Enter decode password">
+      <button onclick="doProtectedDecode()">Unlock 🔓</button>
+    </div>
+
+    <button onclick="signOut()" style="margin-top:15px;width:100%;background:linear-gradient(90deg,#ff0066,#ff00ff);">
+      🚪 Sign Out
+    </button>
+
+    <footer>Made with 💙 by <span>ZestSide</span></footer>
   </div>
 
-  <script>
-    // Login Logic
-    function login() {
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      if (username && password) {
-        document.getElementById('login-page').classList.add('fade-out');
-        setTimeout(() => {
-          document.getElementById('login-page').style.display = 'none';
-          document.getElementById('converter-page').style.display = 'flex';
-          document.getElementById('converter-page').classList.add('fade-in');
-          createHearts();
-        }, 600);
-      } else {
-        alert("Please enter username and password!");
-      }
-    }
+<script>
+  const DEMO_USER = "mehin";
+  const DEMO_PASS = "04122019";
+  const PROTECTED_DECODE_PASSWORD = "zestcode";
 
-    // Simple Encode/Decode
-    function encode() {
-      const text = document.getElementById("inputText").value;
-      document.getElementById("inputText").value = btoa(text);
-    }
-
-    function decode() {
-      const text = document.getElementById("inputText").value;
-      document.getElementById("inputText").value = atob(text);
-    }
-
-    function copyText() {
-      const textArea = document.getElementById("inputText");
-      textArea.select();
-      document.execCommand("copy");
-      alert("Copied!");
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle("light");
-    }
-
-    function signOut() {
-      document.getElementById("converter-page").classList.add('fade-out');
+  function login() {
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value.trim();
+    if (u === DEMO_USER && p === DEMO_PASS) {
+      const loginCard = document.getElementById("loginOverlay");
+      loginCard.classList.add("fadeOut");
       setTimeout(() => {
-        document.getElementById("converter-page").style.display = "none";
-        document.getElementById("login-page").style.display = "flex";
-        document.getElementById("login-page").classList.add('fade-in');
+        loginCard.style.display = "none";
+        document.getElementById("appCard").style.display = "block";
+        startHearts();
       }, 600);
-    }
+    } else alert("Invalid username or password!");
+  }
 
-    // Floating Hearts
-    function createHearts() {
-      setInterval(() => {
-        const heart = document.createElement("div");
-        heart.classList.add("heart");
-        heart.style.left = Math.random() * 100 + "vw";
-        heart.style.animationDuration = 5 + Math.random() * 3 + "s";
-        heart.innerHTML = "&#10084;";
-        heart.style.color = Math.random() > 0.5 ? "#ff00ff" : "#cc00ff";
-        document.getElementById("converter-page").appendChild(heart);
+  function signOut() {
+    document.getElementById("appCard").style.display = "none";
+    document.getElementById("loginOverlay").style.display = "flex";
+    document.getElementById("loginOverlay").classList.remove("fadeOut");
+  }
 
-        setTimeout(() => {
-          heart.remove();
-        }, 8000);
-      }, 500);
+  const map = {q:"+",w:"×",e:"=",r:"#",t:"%",y:"^",u:"&",i:"*",o:"(",p:")",
+               a:"@",s:"$",d:"~",f:"?",g:"!",h:":",j:";",k:"<",l:">",
+               z:"{",x:"}",c:"[",v:"]",b:"/",n:"\\",m:"_"};
+  const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
+
+  function typeEffect(text){
+    const out=document.getElementById("outputText");
+    out.value=""; let i=0;
+    const iv=setInterval(()=>{out.value+=text[i]||""; i++; if(i>text.length)clearInterval(iv)},14);
+  }
+
+  function encode(){
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>map[ch.toLowerCase()]||ch).join("");
+    typeEffect(res);
+  }
+
+  function askDecodePassword(){
+    document.getElementById("decodePasswordArea").style.display="block";
+  }
+
+  function doProtectedDecode(){
+    const pass=document.getElementById("decodePass").value.trim();
+    if(pass!==PROTECTED_DECODE_PASSWORD){alert("Wrong decode password!");return;}
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>reverseMap[ch]||ch).join("");
+    typeEffect(res);
+    document.getElementById("decodePasswordArea").style.display="none";
+  }
+
+  function copyText(){
+    const out=document.getElementById("outputText");
+    out.select(); document.execCommand("copy");
+    alert("Copied!");
+  }
+
+  function toggleTheme(){
+    const b=document.body;
+    if(b.style.backgroundColor==="white"){
+      b.style.background="radial-gradient(circle at top left, #1e0034, #000)";
+      document.body.style.color="#fff";
+    } else {
+      b.style.background="white";
+      document.body.style.color="#000";
     }
-  </script>
+  }
+
+  // Floating neon hearts
+  function startHearts() {
+    setInterval(() => {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.innerHTML = "&#10084;";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = 15 + Math.random() * 15 + "px";
+      heart.style.animationDuration = 5 + Math.random() * 3 + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 8000);
+    }, 500);
+  }
+</script>
 </body>
 </html>
