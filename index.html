@@ -1,378 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ZestSide Secret Code</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-dark: radial-gradient(circle at top left, #1e0034, #000);
-    --bg-light: linear-gradient(180deg,#f3f7ff,#e8eefc);
-    --card-bg: rgba(15,15,30,0.85);
-    --glass: rgba(255,255,255,0.06);
-    --neon1: #ff00ff;
-    --neon2: #cc00ff;
-    --accent1: #00e5ff;
-  }
-  html,body{height:100%;margin:0;font-family:'Poppins',sans-serif;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZestSide Secret Code</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top left, #1e0034, #000);
+      color: #fff;
+      overflow: hidden;
+      transition: background 1s ease;
+    }
 
-/* page background (dark by default) */
-  body.dark{
-    background: var(--bg-dark);
-    color:#fff;
-  }
-  body.light{
-    background: var(--bg-light);
-    color:#111;
-  }
+    /* Floating neon background */
+    .neon-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle, rgba(0,212,255,0.3), transparent 70%) 0 0,
+                  radial-gradient(circle, rgba(255,0,255,0.3), transparent 70%) 50% 50%,
+                  radial-gradient(circle, rgba(255,128,0,0.3), transparent 70%) 100% 100%;
+      filter: blur(100px);
+      animation: float 8s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    @keyframes float {
+      0% { transform: translate(0,0) scale(1); }
+      100% { transform: translate(10%, -10%) scale(1.1); }
+    }
 
-/* subtle floating radial background (matches earlier look) */
-  .neon-bg{
-    position:fixed; inset:-40%;
-    background:
-      radial-gradient(circle, rgba(0,212,255,0.08), transparent 30%) 0 0,
-      radial-gradient(circle, rgba(255,0,255,0.06), transparent 30%) 50% 50%,
-      radial-gradient(circle, rgba(255,128,0,0.04), transparent 30%) 100% 100%;
-    filter: blur(100px);
-    z-index:0;
-    pointer-events:none;
-    animation: floatBG 10s ease-in-out infinite alternate;
-  }
-  @keyframes floatBG{
-    from{transform:translate(0,0) scale(1)}
-    to{transform:translate(6%, -6%) scale(1.05)}
-  }
+    /* Neon Hearts (Converter only) */
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff00ff 0%, #ff66ff 60%, transparent 100%);
+      transform: rotate(45deg);
+      animation: floatHeart 10s linear infinite;
+      opacity: 0.6;
+      z-index: 0;
+      filter: drop-shadow(0 0 8px #ff00ff);
+    }
+    .heart::before, .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff00ff 0%, #ff66ff 60%, transparent 100%);
+      border-radius: 50%;
+    }
+    .heart::before { top: -10px; left: 0; }
+    .heart::after { left: -10px; top: 0; }
+    @keyframes floatHeart {
+      0% { transform: translateY(100vh) scale(0.5) rotate(45deg); opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2) rotate(45deg); opacity: 0; }
+    }
 
-/* container center */
-  .center-wrap{position:relative; z-index:2; height:100vh; display:flex; align-items:center; justify-content:center;}
+    /* Card design */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(15,15,30,0.85);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 35px;
+      border-radius: 20px;
+      width: 340px;
+      box-shadow: 0 0 25px rgba(255,0,255,0.5), 0 0 50px rgba(0,200,255,0.3);
+      text-align: center;
+      transition: all 0.5s ease, opacity 0.8s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    .card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    h2, h1 { color: #ff99ff; }
 
-/* login card (neon pink-purple glow) */
-  .login-card{
-    width: 340px;
-    padding: 34px;
-    border-radius:18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 30px rgba(204,0,255,0.08), 0 0 40px rgba(255,0,255,0.06);
-    text-align:center;
-    transition: all 0.36s ease;
-  }
-  .login-card .title{
-    font-size:1.4rem; color:var(--neon2); margin:0 0 8px 0; text-shadow:0 0 12px rgba(204,0,255,0.28);
-    font-weight:600;
-  }
-  .login-card p.small{margin:0 0 18px 0;color:rgba(255,255,255,0.75);font-size:0.92rem}
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 14px;
+      resize: none;
+      transition: 0.3s;
+    }
+    input:focus, textarea:focus {
+      box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff;
+    }
 
-/* inputs */
-  .login-card .input{
-    width:100%; padding:10px 12px; margin:10px 0; border-radius:10px; border:none; outline:none;
-    background: rgba(255,255,255,0.06); color:inherit; font-size:14px;
-  }
-  .login-card .input::placeholder{color: rgba(255,255,255,0.6);}
+    button {
+      background: linear-gradient(90deg, #00ffff, #ff00ff);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #fff;
+      transition: 0.3s;
+      margin: 6px;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #ff00ff, 0 0 30px #00ffff;
+    }
 
-/* neon login button */
-  .btn{
-    display:inline-block;
-    width:100%;
-    padding:11px 14px;
-    border-radius:10px;
-    border:none;
-    cursor:pointer;
-    font-weight:600;
-    color:#fff;
-    background: linear-gradient(90deg,var(--neon1),var(--neon2));
-    box-shadow: 0 6px 18px rgba(204,0,255,0.18), 0 0 14px rgba(255,0,255,0.08) inset;
-    transition: transform .18s ease, box-shadow .18s ease;
-  }
-  .btn:hover{ transform:translateY(-3px); box-shadow:0 12px 30px rgba(204,0,255,0.24), 0 0 22px rgba(255,0,255,0.12) inset; }
+    footer {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #bbb;
+    }
+    footer span { color: #ff99ff; font-weight: 600; }
 
-/* card subtle hover */
-  .login-card:hover{ transform: translateY(-6px); }
-
-/* app card (same style as card earlier) */
-  .app-card{
-    width: 360px;
-    padding:28px;
-    border-radius:18px;
-    background: rgba(15,15,30,0.84);
-    border:1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 35px rgba(0,0,0,0.25), 0 0 30px rgba(255,0,255,0.05);
-    text-align:center;
-    transition:all .28s ease;
-    position:relative;
-  }
-  .app-card h1{margin:0 0 12px;color:var(--neon2);font-size:1.25rem;}
-  textarea{width:100%;height:92px;border-radius:10px;border:none;padding:10px;background:rgba(255,255,255,0.06);color:inherit;resize:none;font-size:14px}
-  .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
-  .wide{width:100%}
-
-/* small footer */
-  .footer{font-size:12px;color:rgba(255,255,255,0.7);margin-top:12px}
-
-/* fade animations */
-  .fade-out{ animation:fadeOut .55s forwards; }
-  .fade-in{ animation:fadeIn .6s forwards; }
-  @keyframes fadeOut{ to{opacity:0; transform:scale(.98)} }
-  @keyframes fadeIn{ from{opacity:0; transform:scale(.98)} to{opacity:1; transform:scale(1)} }
-
-/* hearts container (only visible on converter page) */
-  .hearts-layer{ position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
-
-/* heart style (neon pink/purple) - single size as requested */
-  .heart {
-    position:absolute;
-    bottom:-40px;
-    font-size:20px;
-    color:var(--neon1);
-    text-shadow: 0 0 8px rgba(255,0,255,0.85), 0 0 18px rgba(204,0,255,0.45);
-    opacity:0.95;
-    transform:translateY(0) scale(1);
-    animation-name:heartFloat;
-    animation-timing-function:linear;
-    animation-iteration-count:1;
-  }
-  @keyframes heartFloat {
-    from{ transform: translateY(0) scale(1); opacity:1; }
-    to{ transform: translateY(-110vh) scale(1.4); opacity:0; }
-  }
-
-/* light theme tweaks */
-  body.light .login-card{ background: rgba(255,255,255,0.88); color:#111; }
-  body.light .login-card .title{ color:#6d2aff; text-shadow:none; }
-  body.light .app-card{ background: rgba(255,255,255,0.96); color:#111; }
-  body.light textarea{ background: #fff; color:#111; }
-
-/* responsive */
-  @media (max-width:420px){
-    .login-card,.app-card{ width:92%; padding:20px }
-    textarea{height:80px}
-  }
-</style>
+    #loginOverlay, #appCard { display: none; }
+  </style>
 </head>
-<body class="dark">
-  <div class="neon-bg" aria-hidden="true"></div>
+<body>
+  <div class="neon-bg"></div>
 
-  <div class="center-wrap">
-    <!-- LOGIN CARD (neon) -->
-    <div id="loginCard" class="login-card" role="dialog" aria-label="Login">
-      <div class="title">🔑 ZestSide Login</div>
-      <p class="small">Sign in to your Secret Code Converter</p>
-
-      <input id="username" class="input" placeholder="Username" autocomplete="username" />
-      <input id="password" class="input" type="password" placeholder="Password" autocomplete="current-password" />
-
-      <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:rgba(255,255,255,0.8)">
-        <input id="staySigned" type="checkbox" /> Stay signed in
-      </label>
-
-      <div style="height:10px"></div>
-      <button class="btn" id="loginBtn">Login</button>
-
-      <div class="footer">Made with 💙 by <strong>ZestSide</strong></div>
-    </div>
-
-    <!-- APP CARD (hidden initially) -->
-    <div id="appCard" class="app-card" style="display:none" role="main" aria-hidden="true">
-      <h1>🔐 ZestSide Secret Code</h1>
-
-      <textarea id="inputText" placeholder="Enter your message..."></textarea>
-
-      <div class="controls">
-        <button onclick="encode()">Encode 🔁</button>
-        <button onclick="askDecodePassword()">Decode 🔍</button>
-        <button onclick="copyText()">Copy 📋</button>
-        <button onclick="toggleTheme()">Toggle Theme</button>
-      </div>
-
-      <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
-
-      <div id="decodePasswordArea" style="display:none;margin-top:10px">
-        <input id="decodePass" class="input" type="password" placeholder="Enter decode password" />
-        <button onclick="doProtectedDecode()">Unlock 🔓</button>
-      </div>
-
-      <button onclick="signOut()" style="margin-top:12px;width:100%;background:linear-gradient(90deg,#ff0066,#cc00ff);border-radius:10px;padding:10px;border:none;color:#fff;font-weight:600">🚪 Sign Out</button>
-
-      <div class="footer">Made with 💙 by <strong>ZestSide</strong></div>
-    </div>
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginOverlay">
+    <h2>🔑 ZestSide Login</h2>
+    <input id="username" type="text" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <label style="font-size:13px;display:block;margin-top:8px;">
+      <input type="checkbox" id="staySigned"> Stay signed in
+    </label>
+    <button onclick="login()">Login</button>
+    <footer>Made with 💜 by <span>ZestSide</span></footer>
   </div>
 
-  <!-- hearts layer (hearts will be added here only when app shown) -->
-  <div id="heartsLayer" class="hearts-layer" aria-hidden="true"></div>
+  <!-- MAIN APP CARD -->
+  <div class="card" id="appCard">
+    <h1>🔐 ZestSide Secret Code</h1>
+    <textarea id="inputText" placeholder="Enter your message..."></textarea>
+    <div>
+      <button onclick="encode()">Encode 🔁</button>
+      <button onclick="askDecodePassword()">Decode 🔍</button>
+      <button onclick="copyText()">Copy 📋</button>
+      <button onclick="toggleTheme()">☀️ / 🌙</button>
+    </div>
+    <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
+    <div id="decodePasswordArea" style="display:none;margin-top:10px">
+      <input id="decodePass" type="password" placeholder="Enter decode password">
+      <button onclick="doProtectedDecode()">Unlock 🔓</button>
+    </div>
+    <button onclick="signOut()" style="margin-top:15px;width:100%;background:linear-gradient(90deg,#ff0066,#ff00ff);">
+      🚪 Sign Out
+    </button>
+    <footer>Made with 💙 by <span>ZestSide</span></footer>
+  </div>
 
 <script>
-  // mapping used earlier
+  const DEMO_USER = "mehin";
+  const DEMO_PASS = "04122019";
+  const PROTECTED_DECODE_PASSWORD = "zestcode";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem("zest_signed_in");
+    const login = document.getElementById("loginOverlay");
+    login.style.display = "block";
+    setTimeout(() => login.classList.add("show"), 200);
+    if (saved === "true") showApp();
+  });
+
+  function login() {
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value.trim();
+    const stay = document.getElementById("staySigned").checked;
+    if (u === DEMO_USER && p === DEMO_PASS) {
+      if (stay) localStorage.setItem("zest_signed_in", "true");
+      showApp();
+    } else alert("Invalid username or password!");
+  }
+
+  function showApp() {
+    const login = document.getElementById("loginOverlay");
+    const app = document.getElementById("appCard");
+    login.classList.remove("show");
+    setTimeout(() => {
+      login.style.display = "none";
+      app.style.display = "block";
+      setTimeout(() => app.classList.add("show"), 200);
+      createHearts();
+    }, 500);
+  }
+
+  function signOut() {
+    localStorage.removeItem("zest_signed_in");
+    document.getElementById("appCard").style.display = "none";
+    const login = document.getElementById("loginOverlay");
+    login.style.display = "block";
+    setTimeout(() => login.classList.add("show"), 200);
+    document.querySelectorAll(".heart").forEach(h => h.remove());
+  }
+
+  /* Hearts generator */
+  function createHearts() {
+    for (let i = 0; i < 10; i++) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = 8 + Math.random() * 5 + "s";
+      heart.style.animationDelay = Math.random() * 5 + "s";
+      document.body.appendChild(heart);
+    }
+  }
+
+  /* Converter */
   const map = {q:"+",w:"×",e:"=",r:"#",t:"%",y:"^",u:"&",i:"*",o:"(",p:")",
                a:"@",s:"$",d:"~",f:"?",g:"!",h:":",j:";",k:"<",l:">",
                z:"{",x:"}",c:"[",v:"]",b:"/",n:"\\",m:"_"};
   const reverseMap = Object.fromEntries(Object.entries(map).map(([k,v])=>[v,k]));
-  const PROTECTED_DECODE_PASSWORD = "zestcode";
 
-  // heart interval handle to stop when sign out
-  let heartsInterval = null;
-
-  // elements
-  const loginCard = document.getElementById('loginCard');
-  const appCard = document.getElementById('appCard');
-  const heartsLayer = document.getElementById('heartsLayer');
-  const loginBtn = document.getElementById('loginBtn');
-
-  // Allow Enter key to submit on login inputs
-  document.getElementById('username').addEventListener('keydown', (e)=>{ if(e.key==='Enter') login(); });
-  document.getElementById('password').addEventListener('keydown', (e)=>{ if(e.key==='Enter') login(); });
-
-  loginBtn.addEventListener('click', login);
-
-  // login: require non-empty username + password
-  function login(){
-    const u = document.getElementById('username').value.trim();
-    const p = document.getElementById('password').value.trim();
-    const stay = document.getElementById('staySigned').checked;
-    if(!u || !p){ alert('Please enter both username and password!'); return; }
-
-    // fade out login card then show app
-    loginCard.classList.add('fade-out');
-    loginBtn.disabled = true;
-    setTimeout(()=>{
-      loginCard.style.display = 'none';
-      showApp(stay, u);
-      loginBtn.disabled = false;
-      loginCard.classList.remove('fade-out');
-    }, 560);
-  }
-
-  function showApp(stay=false, username=''){
-    // remember if asked
-    if(stay) localStorage.setItem('zest_signed_in','true');
-
-    // show app with fade-in
-    appCard.style.display = 'block';
-    appCard.classList.add('fade-in');
-    appCard.removeAttribute('aria-hidden');
-    // remove animation class after it's done
-    setTimeout(()=> appCard.classList.remove('fade-in'), 700);
-
-    // start hearts only for converter page
-    startHearts();
-  }
-
-  function signOut(){
-    // stop hearts
-    stopHearts();
-
-    // hide app, show login
-    appCard.classList.add('fade-out');
-    setTimeout(()=>{
-      appCard.style.display = 'none';
-      appCard.classList.remove('fade-out');
-      document.getElementById('loginCard').style.display = 'block';
-      // fade-in login card
-      loginCard.classList.add('fade-in');
-      setTimeout(()=> loginCard.classList.remove('fade-in'), 700);
-      localStorage.removeItem('zest_signed_in');
-    }, 420);
-  }
-
-  // encode / decode with map (type effect)
-  function typeEffect(text, targetId){
-    const out = document.getElementById(targetId);
-    out.value = '';
-    let i = 0;
-    const iv = setInterval(()=>{
-      out.value += text[i]||'';
-      i++;
-      if(i>text.length) clearInterval(iv);
-    }, 10);
+  function typeEffect(text){
+    const out=document.getElementById("outputText");
+    out.value=""; let i=0;
+    const iv=setInterval(()=>{out.value+=text[i]||""; i++; if(i>text.length)clearInterval(iv)},14);
   }
 
   function encode(){
-    const text = document.getElementById('inputText').value;
-    const res = text.split('').map(ch => map[ch.toLowerCase()] || ch).join('');
-    typeEffect(res, 'outputText');
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>map[ch.toLowerCase()]||ch).join("");
+    typeEffect(res);
   }
 
   function askDecodePassword(){
-    document.getElementById('decodePasswordArea').style.display = 'block';
-    document.getElementById('decodePass').focus();
+    document.getElementById("decodePasswordArea").style.display="block";
   }
 
   function doProtectedDecode(){
-    const pass = document.getElementById('decodePass').value.trim();
-    if(pass !== PROTECTED_DECODE_PASSWORD){ alert('Wrong decode password!'); return; }
-    const text = document.getElementById('inputText').value;
-    const res = text.split('').map(ch => reverseMap[ch] || ch).join('');
-    typeEffect(res, 'outputText');
-    document.getElementById('decodePasswordArea').style.display = 'none';
+    const pass=document.getElementById("decodePass").value.trim();
+    if(pass!==PROTECTED_DECODE_PASSWORD){alert("Wrong decode password!");return;}
+    const text=document.getElementById("inputText").value;
+    const res=text.split("").map(ch=>reverseMap[ch]||ch).join("");
+    typeEffect(res);
+    document.getElementById("decodePasswordArea").style.display="none";
   }
 
   function copyText(){
-    const out = document.getElementById('outputText');
-    if(!out.value){ alert('Nothing to copy'); return; }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(out.value).then(()=> alert('Copied!'));
-    } else {
-      out.select();
-      document.execCommand('copy');
-      alert('Copied!');
-    }
+    const out=document.getElementById("outputText");
+    out.select(); document.execCommand("copy");
+    alert("Copied!");
   }
 
   function toggleTheme(){
-    if(document.body.classList.contains('dark')){
-      document.body.classList.remove('dark');
-      document.body.classList.add('light');
+    const b=document.body;
+    if(b.style.backgroundColor==="white"){
+      b.style.background="radial-gradient(circle at top left, #1e0034, #000)";
+      b.style.color="#fff";
     } else {
-      document.body.classList.remove('light');
-      document.body.classList.add('dark');
+      b.style.background="white";
+      b.style.color="#000";
     }
   }
-
-  // Hearts: create same-size floating neon hearts at intervals
-  function startHearts(){
-    // clear previous if any
-    stopHearts();
-
-    heartsInterval = setInterval(()=>{
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.innerHTML = '&#10084;'; // heart char
-      // same size as user asked: keep fontSize fixed (20px) but vary left position and duration
-      heart.style.left = Math.random() * 100 + 'vw';
-      const dur = 5 + Math.random()*3; // 5-8s
-      heart.style.animationDuration = dur + 's';
-      // alternate colors neon pink/purple mix
-      heart.style.color = (Math.random() > 0.5) ? '#ff00ff' : '#cc00ff';
-      heartsLayer.appendChild(heart);
-      // remove after its animation finishes
-      setTimeout(()=> {
-        heart.remove();
-      }, (dur*1000) + 200);
-    }, 550);
-  }
-
-  function stopHearts(){
-    if(heartsInterval) { clearInterval(heartsInterval); heartsInterval=null; }
-    // remove leftover hearts
-    const nodes = Array.from(heartsLayer.children);
-    nodes.forEach(n=>n.remove());
-  }
-
-  // restore session if stayed signed in
-  window.addEventListener('DOMContentLoaded', ()=>{
-    if(localStorage.getItem('zest_signed_in') === 'true'){
-      // auto show app
-      document.getElementById('loginCard').style.display = 'none';
-      showApp(true);
-    }
-  });
-
-  // Accessibility: prevent accidental scrolling via hearts layer pointer events
-  heartsLayer.addEventListener('wheel', (e)=> e.preventDefault(), {passive:false});
 </script>
 </body>
 </html>
