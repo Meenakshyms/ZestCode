@@ -21,7 +21,6 @@
       color: #fff;
     }
 
-    /* Neon floating background */
     .neon-bg {
       position: absolute;
       width: 200%;
@@ -41,7 +40,6 @@
       100% { transform: translate(10%, -10%) scale(1.1); }
     }
 
-    /* Center cards */
     .card {
       position: relative;
       z-index: 1;
@@ -54,6 +52,8 @@
       box-shadow: 0 0 25px rgba(255,0,255,0.3), 0 0 50px rgba(0,200,255,0.2);
       text-align: center;
       transition: all 0.3s ease;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .card:hover {
       transform: translateY(-5px);
@@ -93,13 +93,13 @@
       margin-top: 15px;
       font-size: 13px;
       color: #bbb;
+      padding-bottom: 5px;
     }
     footer span {
       color: #ff99ff;
       font-weight: 600;
     }
 
-    /* Login overlay */
     #loginOverlay {
       position: fixed;
       top: 0; left: 0;
@@ -148,10 +148,12 @@
       <button onclick="doProtectedDecode()">Unlock 🔓</button>
     </div>
 
-    <!-- SIGN OUT BUTTON -->
-    <button onclick="signOut()" style="margin-top:15px;width:100%;background:linear-gradient(90deg,#ff0066,#ff00ff);">
-      🚪 Sign Out
-    </button>
+    <!-- Sign Out button -->
+    <div style="margin-top:20px;">
+      <button onclick="signOut()" style="width:100%;background:linear-gradient(90deg,#ff0066,#ff00ff);">
+        🚪 Sign Out
+      </button>
+    </div>
 
     <footer>Made with 💙 by <span>ZestSide</span></footer>
   </div>
@@ -227,10 +229,10 @@
     const b=document.body;
     if(b.style.backgroundColor==="white"){
       b.style.background="radial-gradient(circle at top left, #1e0034, #000)";
-      document.body.style.color="#fff";
+      b.style.color="#fff";
     } else {
       b.style.background="white";
-      document.body.style.color="#000";
+      b.style.color="#000";
     }
   }
 </script>
