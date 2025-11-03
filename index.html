@@ -20,8 +20,6 @@
       background: radial-gradient(circle at top left, #1e0034, #000);
       color: #fff;
     }
-
-    /* Neon floating background */
     .neon-bg {
       position: absolute;
       width: 200%;
@@ -40,8 +38,6 @@
       0% { transform: translate(0,0) scale(1); }
       100% { transform: translate(10%, -10%) scale(1.1); }
     }
-
-    /* Center cards */
     .card {
       position: relative;
       z-index: 1;
@@ -59,7 +55,6 @@
       transform: translateY(-5px);
       box-shadow: 0 0 35px rgba(255,0,255,0.5), 0 0 70px rgba(0,200,255,0.4);
     }
-
     input, textarea {
       width: 100%;
       padding: 10px;
@@ -72,7 +67,6 @@
       font-size: 14px;
       resize: none;
     }
-
     button {
       background: linear-gradient(90deg, #00ffff, #ff00ff);
       border: none;
@@ -88,7 +82,6 @@
       transform: scale(1.05);
       box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff;
     }
-
     footer {
       margin-top: 15px;
       font-size: 13px;
@@ -98,8 +91,6 @@
       color: #ff99ff;
       font-weight: 600;
     }
-
-    /* Login overlay */
     #loginOverlay {
       position: fixed;
       top: 0; left: 0;
@@ -139,6 +130,7 @@
       <button onclick="askDecodePassword()">Decode 🔍</button>
       <button onclick="copyText()">Copy 📋</button>
       <button onclick="toggleTheme()">☀️ / 🌙</button>
+      <button onclick="signOut()">🚪 Sign Out</button>
     </div>
 
     <textarea id="outputText" placeholder="Result will appear here..." readonly></textarea>
@@ -174,6 +166,12 @@
   function showApp() {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("appCard").style.display = "block";
+  }
+
+  function signOut() {
+    localStorage.removeItem("zest_signed_in");
+    document.getElementById("appCard").style.display = "none";
+    document.getElementById("loginOverlay").style.display = "flex";
   }
 
   const map = {q:"+",w:"×",e:"=",r:"#",t:"%",y:"^",u:"&",i:"*",o:"(",p:")",
